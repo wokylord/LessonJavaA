@@ -8,22 +8,42 @@ import java.util.List;
 
 public class CompanyServiceImpl implements CompanyService{
     @Override
+    /*
+    adds new Employees into a company
+    in the case an employee with the given ID alredy exist
+    the Exception IllegalStateException must be thrown
+    returns reference to the being added
+     */
     public Employee hireEmployee(Employee empl) {
         // TODO
         return null;
     }
 
     @Override
+    /*
+    remove Employee object from company according to a given ID
+    In the case Employee with the given ID does not exist
+    the method must throw IllegalStateException
+     */
     public Employee fireEmployee(long id) {
         return null;
     }
 
     @Override
+    /*
+    returns reference to Employee object with a given ID value
+    In the case Employee with the ID does not exist
+    the method null
+     */
     public Employee getEmployee(long id) {
         return null;
     }
 
     @Override
+    /*
+    returns list of employee objects working in a given department
+    in the case none employees in the department, the method returns method list
+     */
     public List<Employee> getEmployeesByDepartment(String department) {
         return null;
     }
