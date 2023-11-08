@@ -2,6 +2,7 @@ package telran.company.test;
 
 import java.time.temporal.*;
 
+import telran.company.dto.DepartmentAvgSalary;
 import telran.company.dto.Employee;
 import telran.company.service.CompanyService;
 import telran.company.service.CompanyServiceImpl;
@@ -121,12 +122,26 @@ class CompanyTest {
     @org.junit.jupiter.api.Test
     void getAllEmployees() {
         //TODO home
+        List<Employee> actualList = company.getAllEmployees();
+        Employee[] actualArray1 = actualList.toArray(new Employee[]{});
+        Arrays.sort(actualArray1);
+        assertArrayEquals(employees,actualArray1);
+
+        assertNull(company.getAllEmployees());
+
 
     }
 
     @org.junit.jupiter.api.Test
     void getEmployeesBySalary() {
         //TODO home
+        List<Employee> actualList = company.getEmployeesBySalary(4000, 1000);
+        Employee[] actualArray = actualList.toArray(new Employee[]{});
+        Arrays.sort(actualArray);
+        assertArrayEquals(employees,actualArray);
+
+        List<Employee> actualList1 = company.getEmployeesBySalary(0,4000);
+        assertTrue(actualList1.isEmpty());
     }
 
     @org.junit.jupiter.api.Test
@@ -149,7 +164,15 @@ class CompanyTest {
 
     @org.junit.jupiter.api.Test
     void salaryDistributionsByDepartments() {
-        //TODO from classwork
+        DepartmentAvgSalary[] expectedDistribution = {
+                new DepartmentAvgSalary(DEPARTMENT1, (SALARY1 + SALARY2) / 2),
+                new DepartmentAvgSalary(DEPARTMENT2, (SALARY3 + SALARY4) / 2),
+                new DepartmentAvgSalary(DEPARTMENT3, SALARY5)
+        };
+        List<DepartmentAvgSalary> listDistribution = company.salaryDistributionsByDepartments();
+        DepartmentAvgSalary[] actualDistribution = listDistribution.toArray(new DepartmentAvgSalary[]{});
+        Arrays.sort(actualDistribution);
+        assertArrayEquals(expectedDistribution, actualDistribution);
     }
 
     @org.junit.jupiter.api.Test
@@ -173,8 +196,7 @@ class CompanyTest {
     }
 
     private int getAge(LocalDate birthdate) {
-        //FIXME wrong JDK
-        //int result = ChronoUnit.
-        return 0;
+        int result = (int) ChronoUnit.YEARS.between(birthdate, LocalDate.now());
+        return result;
     }
 }
