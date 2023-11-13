@@ -48,6 +48,7 @@ class CompanyTest {
     Employee empl5 = new Employee(ID5, "name5", SALARY5, DEPARTMENT3, DATE5);
     Employee[] employees = {empl1, empl2, empl3, empl4, empl5};
     CompanyService company = null;
+    CompanyService company1 = null;
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() throws Exception {
@@ -138,9 +139,12 @@ class CompanyTest {
         Arrays.sort(actualArray1);
         assertArrayEquals(employees,actualArray1);
          */
+
         runListTest(employees, company.getAllEmployees());
 
-        assertNull(company.getAllEmployees());
+        //assertNull(company1.getAllEmployees());
+
+
     }
 
     @org.junit.jupiter.api.Test
