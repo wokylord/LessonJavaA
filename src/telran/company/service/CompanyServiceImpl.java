@@ -5,16 +5,21 @@ import telran.company.dto.Employee;
 import telran.company.dto.SalaryIntervalDistribution;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
-public class CompanyServiceImpl implements CompanyService{
-    HashMap<Long,Employee> employeesMap = new HashMap<>();
+public class CompanyServiceImpl implements CompanyService {
+    HashMap<Long, Employee> employeesMap = new HashMap<>();
+    /***********************************************************/
     HashMap<String, Set<Employee>> employeesDepartment = new HashMap<>();
+    //key - department, value- Set of employees working in the department
+    /*************************************************************/
     TreeMap<Integer, Set<Employee>> employeesSalary = new TreeMap<>();
-    TreeMap<LocalDate,Set<Employee>> employeesAge = new TreeMap<>();
+    //key - salary, value - set of employees having the salary value
+    /****************************************************************/
+    TreeMap<LocalDate, Set<Employee>> employeesAge = new TreeMap<>();
+    //key birth date; value set of employees born at the date
+
+    /*******************************************************************/
     @Override
     /*
     adds new Employees into a company
@@ -23,8 +28,41 @@ public class CompanyServiceImpl implements CompanyService{
     returns reference to the being added
      */
     public Employee hireEmployee(Employee empl) {
-        // TODO
-        return null;
+        long id = empl.id();
+        if (employeesMap.containsKey(id)) {
+            throw new IllegalStateException("Employee already exists " + id);
+        }
+        employeesMap.put(id, empl);
+        addEmployeeSalary(empl);
+        addEmployeeDepartment(empl);
+        addEmployeeAge(empl);
+        return empl;
+    }
+
+    private void addEmployeeAge(Employee empl) {
+        LocalDate birthdate = empl.birthdate();
+        Set<Employee> set =
+                employeesAge.computeIfAbsent(birthdate, k -> new HashSet<>());
+        set.add(empl);
+    }
+
+    private void addEmployeeDepartment(Employee empl) {
+        String department = empl.department();
+//		Set<Employee> set = employeesDepartment.computeIfAbsent(department, k -> new HashSet<>());
+//		set.add(empl);
+        Set<Employee> set = employeesDepartment.get(department);
+        if (set == null) {
+            set = new HashSet<>();
+            employeesDepartment.put(department, set);
+        }
+        set.add(empl);
+
+    }
+
+    private void addEmployeeSalary(Employee empl) {
+        employeesSalary.computeIfAbsent(empl.salary(), k -> new HashSet<>())
+                .add(empl);
+
     }
 
     @Override
@@ -34,7 +72,46 @@ public class CompanyServiceImpl implements CompanyService{
     the method must throw IllegalStateException
      */
     public Employee fireEmployee(long id) {
-        return null;
+        Employee empl = employeesMap.remove(id);
+        if(empl == null) {
+            throw new IllegalStateException("Employee not found " + id);
+        }
+        removeEmployeesDepartment(empl);
+        removeEmployeesSalary(empl);
+        removeEmployeesAge(empl);
+        return empl;
+    }
+    private void removeEmployeesAge(Employee empl) {
+        LocalDate birthDate = empl.birthdate();
+        Set<Employee> set = employeesAge.get(birthDate);
+        set.remove(empl); //removing reference to being
+        //removed
+        //employee from the set
+        // of employees with the given birth date
+        if (set.isEmpty()) {
+            employeesAge.remove(birthDate);
+        }
+
+    }
+
+    private void removeEmployeesSalary(Employee empl) {
+        int salary = empl.salary();
+        Set<Employee> set = employeesSalary.get(salary);
+        set.remove(empl);
+        if(set.isEmpty()) {
+            employeesSalary.remove(salary);
+        }
+
+    }
+
+    private void removeEmployeesDepartment(Employee empl) {
+        String department = empl.department();
+        Set<Employee> set = employeesDepartment.get(department);
+        set.remove(empl);
+        if(set.isEmpty()) {
+            employeesDepartment.remove(department);
+        }
+
     }
 
     @Override
@@ -44,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService{
     the method null
      */
     public Employee getEmployee(long id) {
-        return null;
+        return employeesMap.get(id);
     }
 
     @Override
