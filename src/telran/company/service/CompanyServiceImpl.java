@@ -165,8 +165,9 @@ public class CompanyServiceImpl implements CompanyService {
         return LocalDate.now().minusYears(age);
     }
 
-    @Override
+    @Override // O[n]
     public List<DepartmentAvgSalary> salaryDistributionsByDepartments() {
+        //Map<String,Double>
         return null;
     }
 
