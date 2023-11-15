@@ -2,6 +2,9 @@ package telran.intrview.tasks;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class tasks {
     /**
@@ -123,12 +126,53 @@ public class tasks {
     public static void displayDigitsDistribution() {
         int nNumbers = 1_000_000;
         //TODO
+        /*
         //create stream of random int's (nNumbers), each int number in range [1, Integer.Max_VALUE)
         //conversion to stream of Strings
         //extracting separate char's from Strings
         //grouping with counting of occurrences
         //sorting in descending order of occurrences
         //printing
+
+         */
+        Random gen = new Random();
+        // запускааем поток на 1кк от 1 до МАКС рандомных чисел
+        Map<Integer,Long> map = gen.ints(nNumbers,1,Integer.MAX_VALUE)
+                // из примитива в объект, но сначала в строку
+                .mapToObj(n->Integer.toString(n))
+                // раскрываем каждую строку в коды аске "12" "34" --> 49 50 51 52
+                // .flatMap потому что из одного мы делаем несколько, какбы раскрываем коробку
+                .flatMapToInt(s -> s.chars())
+                .boxed()
+                // записываем в map           ключ   значение
+                .collect(Collectors.groupingBy(s->s,Collectors.counting()));
+
+        // изменяем для получения String
+        Map<String,Long> map2 = gen.ints(nNumbers,1,Integer.MAX_VALUE)
+                // из примитива в объект, но сначала в строку
+                .mapToObj(n->Integer.toString(n))
+                // раскрываем каждую строку в коды аске "12" "34" --> 49 50 51 52
+                // .flatMap потому что из одного мы делаем несколько, какбы раскрываем коробку
+                .flatMapToInt(s -> s.chars())
+                .mapToObj(n-> ""+(char)n)
+                // записываем в map           ключ   значение
+                .collect(Collectors.groupingBy(s->s,Collectors.counting()));
+
+        // другим способом
+        Map<String,Long> map3 = gen.ints(nNumbers,1,Integer.MAX_VALUE)
+                // раскрываем каждый int в коды аске
+                // int        String      char              int
+                // 12 34 >>"12" "34" >> '1' '2' '3' '4' >> 49 50 51 52
+                .flatMap(n->Integer.toString(n).chars())
+                .mapToObj(n-> ""+(char)n)
+                // записываем в map           ключ   значение
+                .collect(Collectors.groupingBy(s->s,Collectors.counting()));
+
+        map2.entrySet().stream()// Stream<Entry<Integer,Long>>
+                // сортируем по значениям в обратном порядке
+                .sorted((e1,e2)->Long.compare(e2.getValue(),e1.getValue()))
+                .forEach(e-> System.out.printf("%s - %d\n", e.getKey(), e.getValue()));
+
     }
 
 }
