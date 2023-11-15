@@ -4,8 +4,10 @@ import telran.company.dto.DepartmentAvgSalary;
 import telran.company.dto.Employee;
 import telran.company.dto.SalaryIntervalDistribution;
 
+import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CompanyServiceImpl implements CompanyService {
     HashMap<Long, Employee> employeesMap = new HashMap<>();
@@ -73,7 +75,7 @@ public class CompanyServiceImpl implements CompanyService {
      */
     public Employee fireEmployee(long id) {
         Employee empl = employeesMap.remove(id);
-        if(empl == null) {
+        if (empl == null) {
             throw new IllegalStateException("Employee not found " + id);
         }
         removeEmployeesDepartment(empl);
@@ -81,6 +83,7 @@ public class CompanyServiceImpl implements CompanyService {
         removeEmployeesAge(empl);
         return empl;
     }
+
     private void removeEmployeesAge(Employee empl) {
         LocalDate birthDate = empl.birthdate();
         Set<Employee> set = employeesAge.get(birthDate);
@@ -98,7 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
         int salary = empl.salary();
         Set<Employee> set = employeesSalary.get(salary);
         set.remove(empl);
-        if(set.isEmpty()) {
+        if (set.isEmpty()) {
             employeesSalary.remove(salary);
         }
 
@@ -108,7 +111,7 @@ public class CompanyServiceImpl implements CompanyService {
         String department = empl.department();
         Set<Employee> set = employeesDepartment.get(department);
         set.remove(empl);
-        if(set.isEmpty()) {
+        if (set.isEmpty()) {
             employeesDepartment.remove(department);
         }
 
@@ -130,7 +133,7 @@ public class CompanyServiceImpl implements CompanyService {
     in the case none employees in the department, the method returns method list
      */
     public List<Employee> getEmployeesByDepartment(String department) {
-        Set<Employee> setEmployeesDepartment = employeesDepartment.getOrDefault(department,new HashSet<>());
+        Set<Employee> setEmployeesDepartment = employeesDepartment.getOrDefault(department, new HashSet<>());
         return new ArrayList<>(setEmployeesDepartment);
     }
 
@@ -141,9 +144,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<Employee> getEmployeesBySalary(int salaryFrom, int salaryTo) {
-        Collection<Set<Employee>> col = employeesSalary.subMap(salaryFrom,salaryTo).values();
+        Collection<Set<Employee>> col = employeesSalary.subMap(salaryFrom, salaryTo).values();
         ArrayList<Employee> res = new ArrayList<>();
-        for (Set<Employee> set:col){
+        for (Set<Employee> set : col) {
             res.addAll(set);
         }
         return res;
@@ -153,9 +156,9 @@ public class CompanyServiceImpl implements CompanyService {
     public List<Employee> getEmployeeByAge(int ageFrom, int ageTo) {
         LocalDate dateFrom = getBirthDate(ageTo);
         LocalDate dateTo = getBirthDate(ageFrom);
-        Collection<Set<Employee>> col = employeesAge.subMap(dateFrom,dateTo).values();
+        Collection<Set<Employee>> col = employeesAge.subMap(dateFrom, dateTo).values();
         ArrayList<Employee> res = new ArrayList<>();
-        for (Set<Employee> set:col){
+        for (Set<Employee> set : col) {
             res.addAll(set);
         }
         return res;
@@ -167,36 +170,60 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override // O[n]
     public List<DepartmentAvgSalary> salaryDistributionsByDepartments() {
-        //Map<String,Double>
-        return null;
+        Map<String, Double> map =
+                employeesMap.values().stream()
+                        .collect(Collectors.groupingBy(empl -> empl.department(), Collectors.averagingInt(empl -> empl.salary())));
+
+        return map.entrySet().stream()
+                .map(e -> new DepartmentAvgSalary(e.getKey(), e.getValue().intValue()))
+                .toList();
     }
 
     @Override
     public List<SalaryIntervalDistribution> getSalaryDistribution(int interval) {
+
         return null;
     }
 
     @Override
     public Employee updateDepartment(long id, String newDepartment) {
         Employee empl = fireEmployee(id);
-        Employee newEmployee = new Employee(id, empl.name(),empl.salary(),newDepartment,empl.birthdate());
+        Employee newEmployee = new Employee(id, empl.name(), empl.salary(), newDepartment, empl.birthdate());
         return hireEmployee(newEmployee);
     }
 
     @Override
     public Employee updateSalary(long id, int newSalary) {
         Employee empl = fireEmployee(id);
-        Employee newEmployee = new Employee(id, empl.name(),newSalary,empl.department(),empl.birthdate());
+        Employee newEmployee = new Employee(id, empl.name(), newSalary, empl.department(), empl.birthdate());
         return hireEmployee(newEmployee);
     }
 
-    @Override
+    @Override // O[n]
     public void save(String filePath) {
-
+        try (ObjectOutputStream output =
+                     new ObjectOutputStream(new FileOutputStream(filePath))) {
+            output.writeObject(getAllEmployees());
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
+    @Override // O[n]
     public void restore(String filePath) {
+        List<Employee> employees = null;
+        try (ObjectInputStream input =
+                     new ObjectInputStream(new FileInputStream(filePath))) {
+            employees = (List<Employee>) input.readObject();
+            // employees.forEach(e-> hireEmployee(e));
+            employees.forEach(this::hireEmployee);
+        } catch (FileNotFoundException e) {
+            System.out.println(filePath + " File with data dose not exist");
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
 
     }
 }
