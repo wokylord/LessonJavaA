@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class) // порядок проведения тестов
 class CompanyTest {
     private static final long ID1 = 123;
@@ -185,9 +186,9 @@ class CompanyTest {
         assertArrayEquals(expected2_3, actual2_3);
 
          */
-        runListTest(employees, company.getEmployeeByAge(0,100));
-        runListTest(new Employee[0], company.getEmployeeByAge(90,100));
-        runListTest(new Employee[]{empl2,empl3}, company.getEmployeeByAge(getAge(DATE3),getAge(DATE1)));
+        runListTest(employees, company.getEmployeeByAge(0, 100));
+        runListTest(new Employee[0], company.getEmployeeByAge(90, 100));
+        runListTest(new Employee[]{empl2, empl3}, company.getEmployeeByAge(getAge(DATE3), getAge(DATE1)));
 
 
     }
@@ -210,28 +211,28 @@ class CompanyTest {
         int interval = 1500;
         List<SalaryIntervalDistribution> distribution = company.getSalaryDistribution(2000);
         SalaryIntervalDistribution[] expectedDistribution = {
-                new SalaryIntervalDistribution(4500,6000,1),
-                new SalaryIntervalDistribution(6000,7500, 2),
-                new SalaryIntervalDistribution(7500,9000,1),
-                new SalaryIntervalDistribution(9000,10500,1)
+                new SalaryIntervalDistribution(4500, 6000, 1),
+                new SalaryIntervalDistribution(6000, 7500, 2),
+                new SalaryIntervalDistribution(7500, 9000, 1),
+                new SalaryIntervalDistribution(9000, 10500, 1)
         };
-        assertArrayEquals(expectedDistribution,distribution.toArray(new SalaryIntervalDistribution[0]));
+        assertArrayEquals(expectedDistribution, distribution.toArray(new SalaryIntervalDistribution[0]));
 
     }
 
     @org.junit.jupiter.api.Test
     void updateDepartment() {
-        assertEquals(empl2,company.updateDepartment(ID2, DEPARTMENT2));
-        runListTest(new Employee[]{empl1},company.getEmployeesByDepartment(DEPARTMENT1));
-        runListTest(new Employee[]{empl2,empl3,empl4},company.getEmployeesByDepartment(DEPARTMENT2));
+        assertEquals(empl2, company.updateDepartment(ID2, DEPARTMENT2));
+        runListTest(new Employee[]{empl1}, company.getEmployeesByDepartment(DEPARTMENT1));
+        runListTest(new Employee[]{empl2, empl3, empl4}, company.getEmployeesByDepartment(DEPARTMENT2));
 
     }
 
     @org.junit.jupiter.api.Test
     void updateSalary() {
-        assertEquals(empl2, company.updateSalary(ID2,SALARY3));
-        runListTest(new Employee[]{empl1},company.getEmployeesBySalary(SALARY1,SALARY3));
-        runListTest(new Employee[]{empl2,empl3,empl4}, company.getEmployeesBySalary(SALARY3,SALARY5));
+        assertEquals(empl2, company.updateSalary(ID2, SALARY3));
+        runListTest(new Employee[]{empl1}, company.getEmployeesBySalary(SALARY1, SALARY3));
+        runListTest(new Employee[]{empl2, empl3, empl4}, company.getEmployeesBySalary(SALARY3, SALARY5));
 
     }
 

@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public record Employee(long id, String name,
                        int salary, String department, LocalDate birthdate)
-        implements Serializable,Comparable<Employee> {
+        implements Serializable, Comparable<Employee> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -22,6 +22,6 @@ public record Employee(long id, String name,
 
     @Override
     public int compareTo(Employee o) {
-        return Long.compare(id,o.id);
+        return Long.compare(id, o.id);
     }
 }
