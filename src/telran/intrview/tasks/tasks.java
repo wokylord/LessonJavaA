@@ -1,9 +1,7 @@
 package telran.intrview.tasks;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class tasks {
@@ -125,7 +123,7 @@ public class tasks {
     //Task for streams /grouping
     public static void displayDigitsDistribution() {
         int nNumbers = 1_000_000;
-        //TODO
+        //
         /*
         //create stream of random int's (nNumbers), each int number in range [1, Integer.Max_VALUE)
         //conversion to stream of Strings
@@ -174,5 +172,28 @@ public class tasks {
                 .forEach(e-> System.out.printf("%s - %d\n", e.getKey(), e.getValue()));
 
     }
+    /**
+     * prints a given array in random shuffled order
+     * @param array
+     * Hint: see solution of sportloto from "java-streams" branch
+     * void displaySportloto() {
+    Random gen = new Random();
+    gen.ints(1, 50)
+    .distinct().limit(7)
+    .forEach(n -> System.out.print(n + " "));
+    }
+     */
+    public static void displayArrayShuffling(int []array) {
+        //TODO
+        Random gen = new Random();
+        Arrays.stream(array)
+                .boxed()
+                .sorted((a,b)-> ThreadLocalRandom.current().nextInt(-1,2))
+                .forEach(n-> System.out.print(n+" "));
+        System.out.println();
+
+
+    }
+
 
 }
