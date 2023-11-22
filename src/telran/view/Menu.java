@@ -1,7 +1,7 @@
 package telran.view;
 
 public class Menu implements Item {
-    private static final String SYMBOL = "_";
+    private static final String SYMBOL = "*";
     private static final int N_SYMBOLS = 30;
     private Item[] items;
     private String name;
